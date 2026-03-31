@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Challenge 5 Calculator</title>
+  <title>RPS / Rune Clones Calculator</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -85,7 +85,7 @@
 </head>
 <body>
   <div class="card">
-    <h1>Challenge 5 Calculator</h1>
+    <h1>RPS Calculator</h1>
     <p>Enter your RPS and Rune Clones to calculate <strong>(RPS / Rune Clones) × 25,000</strong>.</p>
     <div class="hint">Supports suffixes like k, m, b, t, De, UDe, DDe, NoDe, Vt, NoVt, Tg, NoTg, qg, and Noqg.</div>
 
@@ -301,7 +301,7 @@
       let waitLine = '<div style="margin-top: 8px; font-size: 0.95rem; color: #94a3b8;">Estimated wait: No target threshold</div>';
 
       if (targetThreshold !== null) {
-        const secondsNeeded = targetThreshold / rps;
+        const secondsNeeded = targetThreshold / (rps / runeClones);
         waitLine = `<div style="margin-top: 8px; font-size: 0.95rem; color: #94a3b8;">Estimated wait to unlock: ${formatDuration(secondsNeeded)} (≈ ${targetThreshold.toExponential(4)} / RPS)</div>`;
       }
 
@@ -314,4 +314,3 @@
   </script>
 </body>
 </html>
-
