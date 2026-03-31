@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>RPS / Rune Clones Calculator</title>
+  <title>Challenge 5 Calculator</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -211,8 +211,37 @@
       return `${scaled.toFixed(decimals)} ${displaySuffix(suffix)}`;
     }
 
+    function formatDuration(seconds) {
+      if (!isFinite(seconds) || seconds < 0) return 'Unavailable';
+
+      const units = [
+        ['year', 31536000],
+        ['day', 86400],
+        ['hour', 3600],
+        ['minute', 60],
+        ['second', 1]
+      ];
+
+      const parts = [];
+      let remaining = Math.floor(seconds);
+
+      for (const [name, value] of units) {
+        if (remaining >= value || (name === 'second' && parts.length === 0)) {
+          const amount = Math.floor(remaining / value);
+          if (amount > 0 || name === 'second') {
+            parts.push(`${amount} ${name}${amount !== 1 ? 's' : ''}`);
+            remaining %= value;
+          }
+        }
+        if (parts.length === 2) break;
+      }
+
+      return parts.join(' ');
+    }
+
     function calculateResult() {
-      const rps = parseValue(document.getElementById('rps').value);
+      const rawRps = parseValue(document.getElementById('rps').value);
+      const rps = rawRps;
       const runeClones = parseValue(document.getElementById('runeClones').value);
       const resultBox = document.getElementById('result');
 
@@ -226,21 +255,29 @@
         return;
       }
 
-      const result = (rps / runeClones) * 25000;
+      if (rps <= 0) {
+        resultBox.textContent = 'RPS must be greater than 0.';
+        return;
+      }
 
+      const result = (rps / runeClones) * 25000;
       const oneUDe = suffixes.ude;
       let advice = 'No rune suggestion.';
+      let targetThreshold = null;
 
       // Treat the result as the denominator in a "1 in X" style value.
-      // Example: 1.32UDe means "1 in 1.32 UDe".
       if (result < oneUDe) {
         advice = 'Open Meteor Rune';
+        targetThreshold = oneUDe;
       } else if (result < 5 * oneUDe) {
         advice = 'Open Stardust Rune';
+        targetThreshold = 5 * oneUDe;
       } else if (result < 100 * oneUDe) {
         advice = 'Open Comet Rune';
+        targetThreshold = 100 * oneUDe;
       } else if (result < 250 * oneUDe) {
         advice = 'Open Ash Rune';
+        targetThreshold = 250 * oneUDe;
       }
 
       function colorizeAdvice(text) {
@@ -261,10 +298,17 @@
       }
 
       const coloredAdvice = colorizeAdvice(advice);
+      let waitLine = '<div style="margin-top: 8px; font-size: 0.95rem; color: #94a3b8;">Estimated wait: No target threshold</div>';
+
+      if (targetThreshold !== null) {
+        const secondsNeeded = targetThreshold / rps;
+        waitLine = `<div style="margin-top: 8px; font-size: 0.95rem; color: #94a3b8;">Estimated wait to unlock: ${formatDuration(secondsNeeded)} (≈ ${targetThreshold.toExponential(4)} / RPS)</div>`;
+      }
 
       resultBox.innerHTML = `
         <div>Result: ${formatWithSuffix(result)} (${result.toExponential(4)})</div>
         <div style="margin-top: 8px; font-size: 0.95rem; color: #cbd5e1;">Suggestion: <strong>${coloredAdvice}</strong></div>
+        ${waitLine}
       `;
     }
   </script>
