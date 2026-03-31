@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RPS / Rune Clones Calculator</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fff;
+    }
+    .card {
+      width: min(92vw, 460px);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(10px);
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 1.7rem;
+      text-align: center;
+    }
+    p {
+      margin: 0 0 16px;
+      text-align: center;
+      color: #cbd5e1;
+      line-height: 1.5;
+    }
+    label {
+      display: block;
+      margin: 14px 0 8px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-size: 1rem;
+      outline: none;
+    }
+    button {
+      width: 100%;
+      margin-top: 18px;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 22px;
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.09);
+      text-align: center;
+      font-size: 1.1rem;
+      min-height: 58px;
+      display: grid;
+      place-items: center;
+    }
+    .formula {
+      font-size: 0.9rem;
+      color: #94a3b8;
+      margin-top: 8px;
+      text-align: center;
+    }
+    .hint {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>RPS Calculator</h1>
+    <p>Enter your RPS and Rune Clones to calculate <strong>(RPS / Rune Clones) × 25,000</strong>.</p>
+    <div class="hint">Supports suffixes like k, m, b, t, De, UDe, DDe, NoDe, Vt, NoVt, Tg, NoTg, qg, and Noqg.</div>
+
+    <label for="rps">RPS</label>
+    <input id="rps" type="text" placeholder="Enter RPS (example: 1.5DDe)" />
+
+    <label for="runeClones">Rune Clones</label>
+    <input id="runeClones" type="text" placeholder="Enter Rune Clones (example: 250qg)" />
+
+    <button onclick="calculateResult()">Calculate</button>
+
+    <div class="result" id="result">Your result will appear here.</div>
+    <div class="formula">Formula: (RPS / Rune Clones) × 25,000</div>
+  </div>
+
+  <script>
+    const suffixes = {
+      k: 1e3,
+      m: 1e6,
+      b: 1e9,
+      t: 1e12,
+      qa: 1e15,
+      qi: 1e18,
+      sx: 1e21,
+      sp: 1e24,
+      oc: 1e27,
+      no: 1e30,
+
+      de: 1e33,
+      ude: 1e36,
+      dde: 1e39,
+      tde: 1e42,
+      qdde: 1e45,
+      qnde: 1e48,
+      sxde: 1e51,
+      spde: 1e54,
+      ocde: 1e57,
+      node: 1e60,
+
+      vt: 1e63,
+      uvt: 1e66,
+      dvt: 1e69,
+      tvt: 1e72,
+      qdvt: 1e75,
+      qnvt: 1e78,
+      sxvt: 1e81,
+      spvt: 1e84,
+      ocvt: 1e87,
+      novt: 1e90,
+
+      tg: 1e93,
+      utg: 1e96,
+      dtg: 1e99,
+      ttg: 1e102,
+      qdtg: 1e105,
+      qntg: 1e108,
+      sxtg: 1e111,
+      sptg: 1e114,
+      octg: 1e117,
+      notg: 1e120,
+
+      qg: 1e123,
+      uqg: 1e126,
+      dqg: 1e129,
+      tqg: 1e132,
+      qdqg: 1e135,
+      qnqg: 1e138,
+      sxqg: 1e141,
+      spqg: 1e144,
+      ocqg: 1e147,
+      noqg: 1e150
+    };
+
+    const orderedSuffixes = Object.entries(suffixes).sort((a, b) => a[1] - b[1]);
+
+    function parseValue(value) {
+      const raw = value.trim();
+      if (!raw) return NaN;
+
+      const normalized = raw.replace(/,/g, '').toLowerCase();
+      const match = normalized.match(/^([0-9]*\.?[0-9]+)\s*([a-z]+)?$/);
+      if (!match) return NaN;
+
+      const number = parseFloat(match[1]);
+      const suffix = match[2];
+
+      if (!suffix) return number;
+      if (!(suffix in suffixes)) return NaN;
+
+      return number * suffixes[suffix];
+    }
+
+    function displaySuffix(suffix) {
+      const special = {
+        k: 'k', m: 'm', b: 'b', t: 't', qa: 'qa', qi: 'qi', sx: 'sx', sp: 'sp', oc: 'oc', no: 'no',
+        de: 'De', ude: 'UDe', dde: 'DDe', tde: 'TDe', qdde: 'QdDe', qnde: 'QnDe', sxde: 'SxDe', spde: 'SpDe', ocde: 'OcDe', node: 'NoDe',
+        vt: 'Vt', uvt: 'UVt', dvt: 'DVt', tvt: 'TVt', qdvt: 'QdVt', qnvt: 'QnVt', sxvt: 'SxVt', spvt: 'SpVt', ocvt: 'OcVt', novt: 'NoVt',
+        tg: 'Tg', utg: 'UTg', dtg: 'DTg', ttg: 'TTg', qdtg: 'QdTg', qntg: 'QnTg', sxtg: 'SxTg', sptg: 'SpTg', octg: 'OcTg', notg: 'NoTg',
+        qg: 'qg', uqg: 'Uqg', dqg: 'Dqg', tqg: 'Tqg', qdqg: 'Qdqg', qnqg: 'Qnqg', sxqg: 'Sxqg', spqg: 'Spqg', ocqg: 'Ocqg', noqg: 'Noqg'
+      };
+      return special[suffix] || suffix;
+    }
+
+    function formatWithSuffix(num) {
+      if (!isFinite(num)) return 'Too large to display';
+      if (Math.abs(num) < 1000) {
+        return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+      }
+
+      let chosen = null;
+      for (const [suffix, value] of orderedSuffixes) {
+        if (Math.abs(num) >= value) chosen = [suffix, value];
+        else break;
+      }
+
+      if (!chosen) {
+        return num.toLocaleString(undefined, { maximumFractionDigits: 2 });
+      }
+
+      const [suffix, value] = chosen;
+      const scaled = num / value;
+      const decimals = scaled >= 100 ? 0 : scaled >= 10 ? 1 : 2;
+      return `${scaled.toFixed(decimals)} ${displaySuffix(suffix)}`;
+    }
+
+    function calculateResult() {
+      const rps = parseValue(document.getElementById('rps').value);
+      const runeClones = parseValue(document.getElementById('runeClones').value);
+      const resultBox = document.getElementById('result');
+
+      if (isNaN(rps) || isNaN(runeClones)) {
+        resultBox.textContent = 'Please enter valid values. Example: 1.5DDe, 20Vt, or 250qg';
+        return;
+      }
+
+      if (runeClones === 0) {
+        resultBox.textContent = 'Rune Clones cannot be 0.';
+        return;
+      }
+
+      const result = (rps / runeClones) * 25000;
+      resultBox.textContent = `Result: ${formatWithSuffix(result)} (${result.toExponential(4)})`;
+    }
+  </script>
+</body>
+</html>
