@@ -298,19 +298,12 @@
       }
 
       const coloredAdvice = colorizeAdvice(advice);
-      let waitLine = '<div style="margin-top: 8px; font-size: 0.95rem; color: #94a3b8;">Estimated wait: No target threshold</div>';
-
-      if (targetThreshold !== null) {
-        const secondsNeeded = targetThreshold / (rps * runeClones);
-        waitLine = `<div style="margin-top: 8px; font-size: 0.95rem; color: #94a3b8;">Estimated wait to unlock: ${formatDuration(secondsNeeded)} (≈ ${targetThreshold.toExponential(4)} / RPS)</div>`;
-      }
-
       resultBox.innerHTML = `
         <div>Result: ${formatWithSuffix(result)} (${result.toExponential(4)})</div>
         <div style="margin-top: 8px; font-size: 0.95rem; color: #cbd5e1;">Suggestion: <strong>${coloredAdvice}</strong></div>
-        ${waitLine}
       `;
     }
   </script>
 </body>
 </html>
+
