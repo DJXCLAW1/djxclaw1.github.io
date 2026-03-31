@@ -301,7 +301,7 @@
       let waitLine = '<div style="margin-top: 8px; font-size: 0.95rem; color: #94a3b8;">Estimated wait: No target threshold</div>';
 
       if (targetThreshold !== null) {
-        const secondsNeeded = targetThreshold / (rps / runeClones);
+        const secondsNeeded = targetThreshold / (rps * runeClones);
         waitLine = `<div style="margin-top: 8px; font-size: 0.95rem; color: #94a3b8;">Estimated wait to unlock: ${formatDuration(secondsNeeded)} (≈ ${targetThreshold.toExponential(4)} / RPS)</div>`;
       }
 
